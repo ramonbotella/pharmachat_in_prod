@@ -1,0 +1,42 @@
+volumes:
+  ollama_data:
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./entrypoint.sh:/entrypoint.sh
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    command: >
+      /bin/bash -c "
+      /bin/ollama serve & 
+      pid=$! 
+      sleep 5 
+      echo 'Retrieving llama3.2 model...' 
+      ollama pull llama3.2 
+      echo 'Done!' 
+      wait $pid
+      "
+#    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+
+  pharmachat:
+    build:
+        context: ./pharmachat
+        dockerfile: Dockerfile
+    container_name: pharmachat
+    volumes:
+      - ./pharmachat:/root
+    depends_on:
+      - ollama
+    restart: no
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
+
