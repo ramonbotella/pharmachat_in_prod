@@ -26,8 +26,26 @@ services:
     depends_on:
       - ollama
     restart: unless-stopped
+    ports:
+      - "8000:8000"
     networks:
       - default
+
+  pharmachat_frontend:
+    build:
+      context: ./pharmachat_frontend
+      dockerfile: Dockerfile
+    container_name: pharmachat_frontend
+    volumes:
+      - ./pharmachat_frontend:/app
+    depends_on:
+      - pharmachat
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    networks:
+      - default
+
 networks:
   default:
     driver: bridge
