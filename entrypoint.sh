@@ -9,7 +9,8 @@ pid=$!
 sleep 5
 
 echo "Retrieving llama3.2 model..."
-ollama pull llama3.2
+ollama create pharma_assistant -f ./model_files/Modelfile_pharma_assistant
+ollama create language_detector -f ./model_files/Modelfile_language_detector
 echo "Done!"
 
 # Wait for Ollama process to finish.
