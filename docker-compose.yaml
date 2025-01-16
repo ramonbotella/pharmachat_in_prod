@@ -1,6 +1,5 @@
 volumes:
   ollama_data:
-  pharmachat_data:
 
 services:
   ollama:
@@ -23,7 +22,7 @@ services:
         dockerfile: Dockerfile
     container_name: pharmachat
     volumes:
-      - pharmachat_data:/root
+      - ./pharmachat:/root
     depends_on:
       - ollama
     restart: unless-stopped
