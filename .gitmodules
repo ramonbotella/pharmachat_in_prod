@@ -1,0 +1,3 @@
+[submodule "pharmachat"]
+	path = pharmachat
+	url = git@github.com:ramonbotella/pharmachat.git
