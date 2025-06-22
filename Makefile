@@ -9,3 +9,17 @@ build-and-push:
 # Deploys a service to the given environment
 deploy:
 	bash ./k8s/scripts/deploy.sh ${service}
+
+# Run the whole pipeline
+pipeline:
+	make create-cluster
+	make build-and-push image_name=ollama
+	make build-and-push image_name=pharmachat
+	make build-and-push image_name=pharmachat_frontend
+	make deploy service=ollama
+	make deploy service=pharmachat
+	make deploy service=pharmachat_frontend
+    # Sleep for a few seconds to ensure the services are up
+	# Run port-forwarding to access the streamlit app in localhost
+	# kubectl port-forward service/pharmachat-frontend-service 8501:8501
+
