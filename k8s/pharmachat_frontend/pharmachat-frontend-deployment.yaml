@@ -1,0 +1,25 @@
+# k8s/pharmachat-frontend/pharmachat-frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pharmachat-frontend-deployment
+  labels:
+    app: pharmachat-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pharmachat-frontend
+  template:
+    metadata:
+      labels:
+        app: pharmachat-frontend
+    spec:
+      containers:
+      - name: pharmachat-frontend
+        image: pharmachat_frontend:latest # Use the exact image name you loaded
+        ports:
+        - containerPort: 8501
+        env: # If your frontend needs to know backend URL
+        - name: PHARMACHAT_BACKEND_URL
+          value: "http://pharmachat-service:8000" # Kubernetes service name
