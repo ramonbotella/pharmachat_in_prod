@@ -1,3 +1,45 @@
+# k8s/ollama/ollama-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi # Adjust size based on your expected model needs
+
+---
+# k8s/ollama/ollama-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ollama-setup-config
+data:
+  entrypoint.sh: |
+    #!/bin/bash
+    /bin/ollama serve &
+    pid=$!
+    sleep 5 # Give Ollama some time to start
+    echo "Retrieving llama3.2 model..."
+    # Use absolute paths for Modelfiles if they are also mounted from a ConfigMap
+    ollama create pharma_assistant -f /etc/ollama/Modelfile_pharma_assistant
+    ollama create language_detector -f /etc/ollama/Modelfile_language_detector
+    echo "Done!"
+    wait $pid
+  Modelfile_pharma_assistant: |
+    # Content of your Modelfile_pharma_assistant
+    FROM llama3:latest # Example, use your actual base model
+    PARAMETER temperature 0.7
+    # Add your specific instructions here
+  Modelfile_language_detector: |
+    # Content of your Modelfile_language_detector
+    FROM phi3:latest # Example, use your actual base model
+    PARAMETER temperature 0.1
+    # Add your specific instructions here
+
+---
 # k8s/ollama/ollama-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -35,3 +77,17 @@ spec:
           mountPath: /etc/ollama # Mount ConfigMap to access scripts and modelfiles
         command: ["/bin/bash"]
         args: ["/etc/ollama/entrypoint.sh"] # Execute the mounted entrypoint script
+---
+# k8s/ollama/ollama-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-service
+spec:
+  selector:
+    app: ollama
+  ports:
+    - protocol: TCP
+      port: 11434
+      targetPort: 11434
+  type: ClusterIP
