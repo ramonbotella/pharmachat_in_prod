@@ -23,6 +23,8 @@ spec:
         env: # If your frontend needs to know backend URL
         - name: PHARMACHAT_BACKEND_URL
           value: "http://pharmachat-service:8000" # Kubernetes service name
+
+        imagePullPolicy: IfNotPresent
 ---
 # k8s/pharmachat-frontend/pharmachat-frontend-service.yaml
 apiVersion: v1
