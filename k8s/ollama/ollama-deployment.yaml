@@ -30,14 +30,21 @@ data:
     wait $pid
   Modelfile_pharma_assistant: |
     # Content of your Modelfile_pharma_assistant
-    FROM llama3:latest # Example, use your actual base model
-    PARAMETER temperature 0.7
-    # Add your specific instructions here
+    FROM llama3.2
+    # sets the temperature to 0.3[higher is more creative, lower is more coherent]
+    PARAMETER temperature 0.3
+    # sets the context window size to 4096, this controls how many tokens the LLM can use as context to generate the next token
+    PARAMETER num_ctx 4096
+    # sets a custom system message to specify the behavior of the chat assistant
+    SYSTEM You are and pharmaceutical assistant. You will get a medicament leaflet and a question. You will reply the questions with concrete and short answers in the same language as the question
+
   Modelfile_language_detector: |
-    # Content of your Modelfile_language_detector
-    FROM phi3:latest # Example, use your actual base model
-    PARAMETER temperature 0.1
-    # Add your specific instructions here
+    FROM llama3.2
+    # sets the temperature to 0.3[higher is more creative, lower is more coherent]
+    PARAMETER temperature 0.3
+    # sets a custom system message to specify the behavior of the chat assistant
+    SYSTEM You are just a language detector. You will get a text and you will reply with the detected language name in english. You will reply only with the detected language name in english. One word only.
+
 
 ---
 # k8s/ollama/ollama-deployment.yaml
