@@ -28,29 +28,7 @@ nodes:
 
     # Map port between the docker network we created for this cluster and localhost.
     extraPortMappings:
-    - containerPort: 80
-      hostPort: 80
-      protocol: TCP
-
-    - containerPort: 443
-      hostPort: 443
-      protocol: TCP
-
-    - containerPort: 31092
-      hostPort: 9092
+    - containerPort: 8501
+      hostPort: 8501
       listenAddress: "127.0.0.1"
       protocol: TCP
-
-    # Expose Kafka broker to localhost:31234
-    - containerPort: 31234
-      hostPort: 31234
-      listenAddress: "127.0.0.1"
-      protocol: TCP
-
-    - containerPort: 31235
-      hostPort: 31235
-      listenAddress: "127.0.0.1"
-
-    - containerPort: 31236
-      hostPort: 31236
-      listenAddress: "127.0.0.1"
