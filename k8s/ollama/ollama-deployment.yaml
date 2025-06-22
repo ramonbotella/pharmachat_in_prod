@@ -1,0 +1,37 @@
+# k8s/ollama/ollama-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-deployment
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      volumes:
+        - name: ollama-persistent-storage
+          persistentVolumeClaim:
+            claimName: ollama-data-pvc
+        - name: ollama-setup-volume
+          configMap:
+            name: ollama-setup-config
+            defaultMode: 0744 # Ensure scripts are executable
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest # Use the exact version you loaded into Kind
+        ports:
+        - containerPort: 11434
+        volumeMounts:
+        - name: ollama-persistent-storage
+          mountPath: /root/.ollama
+        - name: ollama-setup-volume
+          mountPath: /etc/ollama # Mount ConfigMap to access scripts and modelfiles
+        command: ["/bin/bash"]
+        args: ["/etc/ollama/entrypoint.sh"] # Execute the mounted entrypoint script
