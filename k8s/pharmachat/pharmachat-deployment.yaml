@@ -5,13 +5,13 @@ metadata:
   name: pharmachat-config
 data:
   config.yaml: |
-    # Content of your pharmachat/pharmachat/config/config.yaml
+    # Content of pharmachat/pharmachat/config/config.yaml
     # IMPORTANT: Update URLs to point to Kubernetes service names
-    BASE_SEARCH_URL: "https://cima.aemps.es/cima" # Example placeholder
-    BASE_LEAFLET_URL: "https://cima.aemps.es/cima/dochtml/p/" # Example placeholder, check your app's actual need
+    BASE_SEARCH_URL: "https://cima.aemps.es/cima" 
+    BASE_LEAFLET_URL: "https://cima.aemps.es/cima/dochtml/p/" 
     PHARMA_ASSISTANT_LLM: "pharma_assistant" # Name of the model used by Ollama
     LANGUAGE_DETECTOR_LLM: "language_detector" # Name of the model used by Ollama
-    API_ENDPOINT: "http://ollama:11434/api/generate" # Example placeholder, check your app's actual need
+    API_ENDPOINT: "http://ollama-service:11434/api/generate" # Use the Kubernetes service name for Ollama # Example placeholder, check your app's actual need
 
 ---
 # k8s/pharmachat/pharmachat-deployment.yaml
