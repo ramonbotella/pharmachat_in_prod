@@ -11,5 +11,5 @@ fi
 
 # Apply the Kubernetes manifests
 echo "Applying Kubernetes manifests..."
-kubectl delete -f ${service}/${service}-deploynent.yaml --ignore-not-found=true
-kubectl apply -f ${service}/${service}-deploynent.yaml
+kubectl delete -f ./k8s/${service}/${service}-deployment.yaml --ignore-not-found=true
+kubectl apply -f ./k8s/${service}/${service}-deployment.yaml
