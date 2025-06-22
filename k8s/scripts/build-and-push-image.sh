@@ -12,5 +12,5 @@ if [ -z "$image_name" ]; then
 fi
 # Build the docker image
 echo "Building the docker image: $image_name"
-docker build -t ${image_name}:latest -f ${image_name}/Dockerfile .
+docker build -t ${image_name}:latest -f ${image_name}/Dockerfile ./${image_name}
 kind load docker-image ${image_name}:latest --name pharma-cluster
