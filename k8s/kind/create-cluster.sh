@@ -15,4 +15,4 @@ docker network create --subnet 172.100.0.0/16 pharma-network
 
 # 4. Create the cluster
 echo "Creating the cluster..."
-KIND_EXPERIMENTAL_DOCKER_NETWORK=pharma-network kind create cluster --config ./kind-with-portmapping.yaml
+KIND_EXPERIMENTAL_DOCKER_NETWORK=pharma-network kind create cluster --config ./k8s/kind/kind-with-portmapping.yaml
