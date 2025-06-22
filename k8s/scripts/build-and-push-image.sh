@@ -11,6 +11,14 @@ if [ -z "$image_name" ]; then
   exit 1
 fi
 # Build the docker image
-echo "Building the docker image: $image_name"
-docker build -t ${image_name}:latest -f ${image_name}/Dockerfile ./${image_name}
-kind load docker-image ${image_name}:latest --name pharma-cluster
+# Check if the service is ollama and pull the latest image from the registry
+if [ "$image_name" == "ollama" ]; then
+  echo "Pulling the latest ollama image from the registry..."
+  docker pull ollama/ollama:latest
+  echo "Loading the ollama image into the kind cluster..."
+  kind load docker-image ollama/ollama:latest --name pharma-cluster
+else
+  echo "Building the docker image: $image_name"
+  docker build -t ${image_name}:latest -f ${image_name}/Dockerfile ./${image_name}
+  kind load docker-image ${image_name}:latest --name pharma-cluster
+fi
