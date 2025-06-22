@@ -7,7 +7,12 @@ data:
   config.yaml: |
     # Content of your pharmachat/pharmachat/config/config.yaml
     # IMPORTANT: Update URLs to point to Kubernetes service names
-    ollama_url: "http://ollama-service:11434" # Kubernetes service name
+    BASE_SEARCH_URL: "https://cima.aemps.es/cima" # Example placeholder
+    BASE_LEAFLET_URL: "https://cima.aemps.es/cima/dochtml/p/" # Example placeholder, check your app's actual need
+    PHARMA_ASSISTANT_LLM: "pharma_assistant" # Name of the model used by Ollama
+    LANGUAGE_DETECTOR_LLM: "language_detector" # Name of the model used by Ollama
+    API_ENDPOINT: "http://ollama:11434/api/generate" # Example placeholder, check your app's actual need
+
 ---
 # k8s/pharmachat/pharmachat-deployment.yaml
 apiVersion: apps/v1
@@ -39,6 +44,7 @@ spec:
         - name: pharmachat-config-volume
           mountPath: /root/pharmachat/config/config.yaml # Adjust path if different in your Dockerfile
           subPath: config.yaml # Mount only the specific file
+        imagePullPolicy: IfNotPresent
 ---
 # k8s/pharmachat/pharmachat-service.yaml
 apiVersion: v1
