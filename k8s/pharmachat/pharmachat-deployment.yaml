@@ -11,7 +11,7 @@ data:
     BASE_LEAFLET_URL: "https://cima.aemps.es/cima/dochtml/p/" 
     PHARMA_ASSISTANT_LLM: "pharma_assistant" # Name of the model used by Ollama
     LANGUAGE_DETECTOR_LLM: "language_detector" # Name of the model used by Ollama
-    API_ENDPOINT: "http://ollama-service:11434/api/generate" # Use the Kubernetes service name for Ollama # Example placeholder, check your app's actual need
+    API_ENDPOINT: "http://ollama-service:11434/api/generate" # Use the Kubernetes service name for Ollama 
 
 ---
 # k8s/pharmachat/pharmachat-deployment.yaml
