@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: pharmachat-frontend
-        image: pharmachat_frontend:latest # Use the exact image name you loaded
+        image: pharmachat_frontend:latest
         ports:
         - containerPort: 8501
         env: # If your frontend needs to know backend URL
@@ -38,5 +38,5 @@ spec:
     - protocol: TCP
       port: 8501
       targetPort: 8501
-      nodePort: 30000 # Choose a port in the 30000-32767 range
+      nodePort: 30000 # Typically in 30000-32767 range
   type: NodePort
