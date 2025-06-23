@@ -1,0 +1,34 @@
+#
+# kind delete cluster --name pharma-cluster
+#
+# docker network rm pharma-network
+# docker network create --subnet 172.100.0.0/16 pharma-network
+# KIND_EXPERIMENTAL_DOCKER_NETWORK=pharma-network kind create cluster --config ./kind/kind-with-portmapping.yaml
+#
+# Show status:
+#
+# kubectl get nodes --show-labels
+# kubectl cluster-info --context kind-pharma-cluster
+#
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: pharma-cluster
+networking:
+  podSubnet: "10.100.0.0/16"
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.31.4
+    kubeadmConfigPatches:
+    - |
+      kind: InitConfiguration
+      nodeRegistration:
+        kubeletExtraArgs:
+          node-labels: "ingress-ready=true"
+
+    # Map port between the docker network we created for this cluster and localhost.
+    extraPortMappings:
+    - containerPort: 8501
+      hostPort: 8501
+      listenAddress: "127.0.0.1"
+      protocol: TCP

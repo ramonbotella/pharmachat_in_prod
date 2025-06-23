@@ -1,0 +1,100 @@
+# k8s/ollama/ollama-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi # Adjust size based on your expected model needs
+
+---
+# k8s/ollama/ollama-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ollama-setup-config
+data:
+  entrypoint.sh: |
+    #!/bin/bash
+    /bin/ollama serve &
+    pid=$!
+    sleep 5 # Give Ollama some time to start
+    echo "Retrieving llama3.2 model..."
+    # Use absolute paths for Modelfiles if they are also mounted from a ConfigMap
+    ollama create pharma_assistant -f /etc/ollama/Modelfile_pharma_assistant
+    ollama create language_detector -f /etc/ollama/Modelfile_language_detector
+    echo "Done!"
+    wait $pid
+  Modelfile_pharma_assistant: |
+    # Content of your Modelfile_pharma_assistant
+    FROM llama3.2
+    # sets the temperature to 0.3[higher is more creative, lower is more coherent]
+    PARAMETER temperature 0.3
+    # sets the context window size to 4096, this controls how many tokens the LLM can use as context to generate the next token
+    PARAMETER num_ctx 4096
+    # sets a custom system message to specify the behavior of the chat assistant
+    SYSTEM You are and pharmaceutical assistant. You will get a medicament leaflet and a question. You will reply the questions with concrete and short answers in the same language as the question
+
+  Modelfile_language_detector: |
+    FROM llama3.2
+    # sets the temperature to 0.3[higher is more creative, lower is more coherent]
+    PARAMETER temperature 0.3
+    # sets a custom system message to specify the behavior of the chat assistant
+    SYSTEM You are just a language detector. You will get a text and you will reply with the detected language name in english. You will reply only with the detected language name in english. One word only.
+
+
+---
+# k8s/ollama/ollama-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-deployment
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      volumes:
+        - name: ollama-persistent-storage
+          persistentVolumeClaim:
+            claimName: ollama-data-pvc
+        - name: ollama-setup-volume
+          configMap:
+            name: ollama-setup-config
+            defaultMode: 0744 # Ensure scripts are executable
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest # Use the exact version you loaded into Kind
+        ports:
+        - containerPort: 11434
+        volumeMounts:
+        - name: ollama-persistent-storage
+          mountPath: /root/.ollama
+        - name: ollama-setup-volume
+          mountPath: /etc/ollama # Mount ConfigMap to access scripts and modelfiles
+        command: ["/bin/bash"]
+        args: ["/etc/ollama/entrypoint.sh"] # Execute the mounted entrypoint script
+---
+# k8s/ollama/ollama-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-service
+spec:
+  selector:
+    app: ollama
+  ports:
+    - protocol: TCP
+      port: 11434
+      targetPort: 11434
+  type: ClusterIP

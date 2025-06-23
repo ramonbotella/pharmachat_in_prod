@@ -1,0 +1,61 @@
+# k8s/pharmachat/pharmachat-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pharmachat-config
+data:
+  config.yaml: |
+    # Content of pharmachat/pharmachat/config/config.yaml
+    # IMPORTANT: Update URLs to point to Kubernetes service names
+    BASE_SEARCH_URL: "https://cima.aemps.es/cima" 
+    BASE_LEAFLET_URL: "https://cima.aemps.es/cima/dochtml/p/" 
+    PHARMA_ASSISTANT_LLM: "pharma_assistant" # Name of the model used by Ollama
+    LANGUAGE_DETECTOR_LLM: "language_detector" # Name of the model used by Ollama
+    API_ENDPOINT: "http://ollama-service:11434/api/generate" # Use the Kubernetes service name for Ollama 
+
+---
+# k8s/pharmachat/pharmachat-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pharmachat-deployment
+  labels:
+    app: pharmachat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pharmachat
+  template:
+    metadata:
+      labels:
+        app: pharmachat
+    spec:
+      volumes:
+        - name: pharmachat-config-volume
+          configMap:
+            name: pharmachat-config
+      containers:
+      - name: pharmachat
+        image: pharmachat:latest # Use the exact image name you loaded
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: pharmachat-config-volume
+          mountPath: /root/pharmachat/config/config.yaml # Adjust path if different in your Dockerfile
+          subPath: config.yaml # Mount only the specific file
+        imagePullPolicy: IfNotPresent
+---
+# k8s/pharmachat/pharmachat-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pharmachat-service
+spec:
+  selector:
+    app: pharmachat
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
