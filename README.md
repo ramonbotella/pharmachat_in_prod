@@ -38,7 +38,7 @@ This repository contains the production setup for the PharmaChat application. It
 - **Volumes**: `./pharmachat_frontend:/app`
 - **Depends On**: `pharmachat`
 
-## Setup Instructions
+## Setup Instructions for Docker Deployment
 
 1. Clone the repository:
     ```sh
@@ -55,6 +55,36 @@ This repository contains the production setup for the PharmaChat application. It
     - PharmaChat Backend: `http://localhost:8000`
     - PharmaChat Frontend: `http://localhost:8501`
     - Ollama API: `http://localhost:11434/api/generate`
+
+## Setup Instructions for Kind Kubernetes Deployment
+To deploy the PharmaChat application to a local Kubernetes cluster using Kind, follow these steps. Ensure you have Docker, Kind, kubectl, and make installed on your system.
+
+1. Clone this repository:
+    ```sh
+    git clone https://github.com/ramonbotella/pharmachat_in_prod.git
+    cd pharmachat_in_prod
+    ```
+
+2. Deploy the entire application pipeline. The Makefile in the root of this repository automates the entire deployment process, including cluster creation, image building/loading, and service deployment.
+    ```
+    make pipeline
+    ```
+This command will:
+- Delete any existing pharma-cluster and its associated Docker network, then create a new Kind cluster with port mapping enabled.
+- Pull the ollama/ollama:latest image and load it into the Kind cluster.
+- Build the pharmachat:latest and pharmachat_frontend:latest Docker images from their respective Dockerfiles and load them into the Kind cluster.
+- Apply the Kubernetes deployment and service manifests for ollama, pharmachat, and pharmachat_frontend to the cluster.
+
+3. Access the PharmaChat Frontend:
+Once the make pipeline command completes, the pharmachat_frontend service will be running in your Kind cluster. Due to the port mapping defined in kind-with-portmapping.yaml, you can access it directly via http://localhost:8501.
+
+Alternatively, if make pipeline does not automatically open the port (or if you need to re-establish it), you can manually forward the port:
+
+```sh
+kubectl port-forward service/pharmachat-frontend-service 8501:8501
+```
+
+Then, open your web browser and navigate to http://localhost:8501.
 
 ## Configuration
 
