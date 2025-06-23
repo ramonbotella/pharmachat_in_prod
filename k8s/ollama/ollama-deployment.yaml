@@ -74,7 +74,7 @@ spec:
             defaultMode: 0744 # Ensure scripts are executable
       containers:
       - name: ollama
-        image: ollama/ollama:latest # Use the exact version you loaded into Kind
+        image: ollama/ollama:latest
         ports:
         - containerPort: 11434
         volumeMounts:
