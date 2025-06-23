@@ -19,7 +19,6 @@ pipeline:
 	make deploy service=ollama
 	make deploy service=pharmachat
 	make deploy service=pharmachat_frontend
-    # Sleep for a few seconds to ensure the services are up
 	# Run port-forwarding to access the streamlit app in localhost
 	# kubectl port-forward service/pharmachat-frontend-service 8501:8501
 
